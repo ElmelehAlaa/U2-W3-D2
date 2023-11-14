@@ -26,25 +26,11 @@ public class UtenteService {
     @Autowired
     private UtentiRepository utentiRepository;
 
-    @Autowired
-    private PasswordEncoder bcrypt;
+
 
     @Autowired
     private Cloudinary cloudinary;
-    public Utente save(NewUtenteDTO body) throws IOException{
-        utentiRepository.findByEmail(body.email()).ifPresent( utente -> {
-            throw new BadRequestException("L'email "+ utente.getEmail() + " è già utilizzata!");
-        });
-        Utente newUtente = new Utente();
-        newUtente.setNome(body.nome());
-        newUtente.setEmail(body.email());
-        newUtente.setCognome(body.cognome());
-        newUtente.setUsername(body.username());
-        newUtente.setRole(Role.USER);
-        newUtente.setPassword(bcrypt.encode(body.password()));
-        return utentiRepository.save(newUtente);
 
-    }
     public Page<Utente> getUtenti (int page, int size, String orderBy){
         Pageable pageable = PageRequest.of(page,size, Sort.by(orderBy));
         return utentiRepository.findAll(pageable);

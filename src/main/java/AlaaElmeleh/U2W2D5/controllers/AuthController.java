@@ -20,8 +20,8 @@ import java.io.IOException;
 public class AuthController {
     @Autowired
     private AuthService authService;
-    @Autowired
-    private UtenteService utenteService;
+
+
 
 
 
@@ -46,7 +46,7 @@ public class AuthController {
             throw new BadRequestException(validation.getAllErrors());
         }else {
             try{
-                return utenteService.save(body);
+                return authService.save(body);
             }catch (IOException e ){
                 throw  new RuntimeException(e);
             }
