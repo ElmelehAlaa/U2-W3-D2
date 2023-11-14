@@ -25,6 +25,11 @@ public class ExceptionsHandler {
         }
 
     }
+    @ExceptionHandler(UnauthorizedException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED) // 401
+    public ErrorsResponseDTO handleUnauthorized(UnauthorizedException e){
+        return new ErrorsResponseDTO(e.getMessage(), new Date());
+    }
 
     @ExceptionHandler(NotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)  // 404

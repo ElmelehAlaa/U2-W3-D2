@@ -8,6 +8,7 @@ import AlaaElmeleh.U2W2D5.services.DispositivoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -21,6 +22,7 @@ public class DispositivoController {
     private DispositivoService dispositiviService;
 
     @GetMapping("")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public Page<Dispositivo> getDispositivi(@RequestParam(defaultValue = "0") int page,
                                             @RequestParam(defaultValue = "10")int size,
                                             @RequestParam(defaultValue = "id")String orderBy){
@@ -29,6 +31,7 @@ public class DispositivoController {
 
     @PostMapping("")
     @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize("hasAuthority('ADMIN')")
     public Dispositivo saveDispositivo(@RequestBody @Validated NewDispositivoDTO body, BindingResult validation){
         if(validation.hasErrors()){
             throw new BadRequestException(validation.getAllErrors());
@@ -38,9 +41,11 @@ public class DispositivoController {
     }
 
     @GetMapping(value = "/{id}")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public Dispositivo findById(@PathVariable int id){return dispositiviService.findById(id);}
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public Dispositivo findByIdAndUpdate(@PathVariable int id , @RequestBody @Validated NewDispositivoDTO body,BindingResult validation){
         if(validation.hasErrors()){
             throw new BadRequestException(validation.getAllErrors());
@@ -51,12 +56,14 @@ public class DispositivoController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('ADMIN')")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void findByIdAndDelete(@PathVariable int id){
         dispositiviService.findByIdAndDelete(id);
     }
 
     @PatchMapping("/assegna/{utenteId}/{dispositivoId}")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public Dispositivo assegnaDispositivoAdUnUtente(@PathVariable int utenteId,
                                                @PathVariable int dispositivoId){
         try {

@@ -7,6 +7,9 @@ import AlaaElmeleh.U2W2D5.services.UtenteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -27,25 +30,30 @@ public class UtenteController {
         return utentiService.getUtenti(page,size,orderBy);
     }
 
-//    @PostMapping("")
-//    @ResponseStatus(HttpStatus.CREATED)
-//    public Utente saveUtente(@RequestBody @Validated NewUtenteDTO body, BindingResult validation){
-//        if(validation.hasErrors()){
-//            throw new BadRequestException(validation.getAllErrors());
-//        }else {
-//            try {
-//                    return utentiService.save(body);
-//            }catch (IOException e ){
-//                throw new RuntimeException(e);
-//            }
-//        }
-//    }
+    @GetMapping("/me")
+    public UserDetails getProfile(@AuthenticationPrincipal UserDetails currentUser){
+        return currentUser;
+    };
+
+    @PutMapping("/me")
+    public UserDetails getProfile(@AuthenticationPrincipal Utente currentUser, @RequestBody Utente body){
+        return utentiService.findByIdAndUpdate(currentUser.getId(), body);
+    }
+
+    @DeleteMapping("/me")
+    @ResponseStatus(HttpStatus.NO_CONTENT) // <-- 204 NO CONTENT
+    public void getProfile(@AuthenticationPrincipal Utente currentUser){
+        utentiService.findByIdAndDelete(currentUser.getId());
+    };
+
+
 
     @GetMapping(value = "/{id}")
     public Utente findById(@PathVariable int id){return  utentiService.findById(id);}
 
     @PutMapping("/{id}")
-    public  Utente findByIdAndUpdate(@PathVariable int id, @RequestBody @Validated NewUtenteDTO body,BindingResult validation){
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public  Utente findByIdAndUpdate(@PathVariable int id, @RequestBody @Validated Utente body,BindingResult validation){
         if(validation.hasErrors()){
             throw new BadRequestException(validation.getAllErrors());
         }else {
@@ -55,6 +63,7 @@ public class UtenteController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('ADMIN')")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void findByIdAndDelete(@PathVariable int id){
         utentiService.findByIdAndDelete(id);
